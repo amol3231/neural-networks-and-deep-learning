@@ -29,6 +29,7 @@ class Network(object):
         layer is assumed to be an input layer, and by convention we
         won't set any biases for those neurons, since biases are only
         ever used in computing the outputs from later layers."""
+        #
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
@@ -53,18 +54,19 @@ class Network(object):
         tracking progress, but slows things down substantially."""
         if test_data: n_test = len(test_data)
         n = len(training_data)
-        for j in xrange(epochs):
+        for j in range(epochs):
             random.shuffle(training_data)
             mini_batches = [
                 training_data[k:k+mini_batch_size]
-                for k in xrange(0, n, mini_batch_size)]
+                for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
+                ##print("!!!!{}".format(mini_batch))
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
-                print "Epoch {0}: {1} / {2}".format(
-                    j, self.evaluate(test_data), n_test)
+                print("Epoch {0}: {1} / {2}".format(
+                    j, self.evaluate(test_data), n_test))
             else:
-                print "Epoch {0} complete".format(j)
+                print("Epoch {0} complete".format(j))
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
@@ -109,12 +111,13 @@ class Network(object):
         # second-last layer, and so on.  It's a renumbering of the
         # scheme in the book, used here to take advantage of the fact
         # that Python can use negative indices in lists.
-        for l in xrange(2, self.num_layers):
+        for l in range(2, self.num_layers):
             z = zs[-l]
             sp = sigmoid_prime(z)
             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
+            ##nabla_w[-l] = np.dot(delta, activations[-l-1])
         return (nabla_b, nabla_w)
 
     def evaluate(self, test_data):
@@ -139,3 +142,23 @@ def sigmoid(z):
 def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
+
+network = Network([2,2,1])
+train_x = np.ndarray((4,2), buffer=np.array([8,1.0,1.0,1.0,0,0,1.0,0,0]),offset=np.int_().itemsize,dtype=float) 
+print(train_x)
+train_y = np.ndarray((4,), buffer=np.array([4,1.0,1.0,1.0,0]),offset=np.int_().itemsize,dtype=float) 
+print(train_y)
+training_data = zip(train_x, train_y)
+print(training_data)
+
+
+test_x = np.ndarray((4,2), buffer=np.array([8,1.0,1.0,1,0,0,1.0,0,0]),offset=np.int_().itemsize,dtype=float) 
+print(test_x)
+test_y = np.ndarray((4,), buffer=np.array([4,1.0,1.0,1.0,0]),offset=np.int_().itemsize,dtype=float) 
+print(test_y)
+test_data = zip(train_x, train_y)
+print(test_data)
+##training_data =([1,1],[1]),([0,1],[1]),([1,0],[1]),([0,0],[0])
+##test_data =([1,1],[1]),([0,1],[1]),([1,0],[1]),([0,0],[0])
+network.SGD(training_data,10000,10,4.5,test_data)
+

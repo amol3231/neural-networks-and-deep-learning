@@ -73,6 +73,7 @@ def load_data_wrapper():
     validation_data = zip(validation_inputs, va_d[1])
     test_inputs = [np.reshape(x, (784, 1)) for x in te_d[0]]
     test_data = zip(test_inputs, te_d[1])
+    print(" {0}: {1} / {2}".format(training_data, validation_data, test_data))
     return (training_data, validation_data, test_data)
 
 def vectorized_result(j):
@@ -83,3 +84,9 @@ def vectorized_result(j):
     e = np.zeros((10, 1))
     e[j] = 1.0
     return e
+result = load_data_wrapper()
+
+training_data= result[0]
+validation_data = result[1]
+test_data = result[2]
+
